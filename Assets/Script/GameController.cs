@@ -13,9 +13,8 @@ public class GameController : MonoBehaviour
 
     [SerializeField] private GameObject myLocalCards;
     [SerializeField] private GameObject aiLocalCards;
-
-    [SerializeField] private int myValues = 0;
-    [SerializeField] private int aiValues = 0;
+    public int myValues { get; private set; }
+    public int aiValues { get; private set; }
 
     [SerializeField] private int myQtdCards = 2;
     [SerializeField] private int aiQtdCards = 2;
@@ -23,9 +22,14 @@ public class GameController : MonoBehaviour
     [SerializeField] private Transform myAtualSpot = null;
     [SerializeField] private Transform aiAtualSpot = null;
 
+    public delegate void ChangeMyValueHandler(int value);
+    public event ChangeMyValueHandler ChangeMyValue;
+
     // Start is called before the first frame update
     void Start()
     {
+        myValues = 0;
+        aiValues = 0;
         Shuffle(cards);
         cardsStack = new Stack<Cards>(cards);
 
@@ -78,6 +82,9 @@ public class GameController : MonoBehaviour
                 myAtualSpot.GetComponentsInChildren<Image>()[i].sprite = aux.Image;
             }
         }
+        if(ChangeMyValue != null)
+            ChangeMyValue(myValues);
+
         myQtdCards++;
     }
     public void AiCardsChange()
