@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-public class SomaCartas : MonoBehaviour
+public class CardsValue : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI txt;
-    [SerializeField] private GameController game;
-    void Start()
+
+    private void Awake()
     {
-        game.ChangeMyValue += OnMyValueChanged;
+        txt = GetComponent<TextMeshProUGUI>();
     }
-
-
-    private void OnMyValueChanged(int value)
+    public void OnValueChanged(int value)
     {
         txt.text = "Soma " + value;
     }

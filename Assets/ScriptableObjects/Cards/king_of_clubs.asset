@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: king_of_clubs
   m_EditorClassIdentifier: 
   MyProperty: 1
-  Numero: 11
+  Numero: 10
   IsAs: 0
   Image: {fileID: 21300000, guid: b3507040e0eff424291b961000179d01, type: 3}

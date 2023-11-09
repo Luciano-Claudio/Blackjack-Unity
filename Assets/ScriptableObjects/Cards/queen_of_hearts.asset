@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: queen_of_hearts
   m_EditorClassIdentifier: 
   MyProperty: 2
-  Numero: 11
+  Numero: 10
   IsAs: 0
   Image: {fileID: 21300000, guid: 30de425cd1ce3864f970cb19dd6c2aec, type: 3}

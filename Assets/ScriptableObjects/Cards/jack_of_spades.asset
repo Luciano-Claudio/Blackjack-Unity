@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: jack_of_spades
   m_EditorClassIdentifier: 
   MyProperty: 0
-  Numero: 11
+  Numero: 10
   IsAs: 0
   Image: {fileID: 21300000, guid: 8517863f0fdda4f47a11a86fd1717b36, type: 3}

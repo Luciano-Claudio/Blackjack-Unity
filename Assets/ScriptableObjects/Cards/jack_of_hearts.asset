@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: jack_of_hearts
   m_EditorClassIdentifier: 
   MyProperty: 2
-  Numero: 11
+  Numero: 10
   IsAs: 0
   Image: {fileID: 21300000, guid: 1e7832ca63acb4f42b01f71d92a30686, type: 3}

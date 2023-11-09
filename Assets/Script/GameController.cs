@@ -22,8 +22,8 @@ public class GameController : MonoBehaviour
     [SerializeField] private Transform myAtualSpot = null;
     [SerializeField] private Transform aiAtualSpot = null;
 
-    public delegate void ChangeMyValueHandler(int value);
-    public event ChangeMyValueHandler ChangeMyValue;
+    [SerializeField] private CardsValue myCardsValue;
+    [SerializeField] private CardsValue aiCardsValue;
 
     // Start is called before the first frame update
     void Start()
@@ -56,7 +56,18 @@ public class GameController : MonoBehaviour
             list[randomIndex] = temp;
         }
     }
-    public void MyCardsChange()
+    public void ButtonPress()
+    {
+        MyCardsChange();
+        StartCoroutine(AiPlay());
+    }
+
+    IEnumerator AiPlay()
+    {
+        yield return new WaitForSecondsRealtime(.2f);
+        AiCardsChange();
+    }
+        public void MyCardsChange()
     {
         Transform auxSpot = null;
         if(myAtualSpot != null)
@@ -77,13 +88,18 @@ public class GameController : MonoBehaviour
             else
             {
                 Cards aux = cardsStack.Pop();
-
-                myValues += aux.Numero;
+                if (aux.IsAs)
+                {
+                    myValues = myValues > 10 ? myValues + 1 : myValues + 11;
+                }
+                else
+                {
+                    myValues += aux.Numero;
+                }
                 myAtualSpot.GetComponentsInChildren<Image>()[i].sprite = aux.Image;
             }
         }
-        if(ChangeMyValue != null)
-            ChangeMyValue(myValues);
+        myCardsValue.OnValueChanged(myValues);
 
         myQtdCards++;
     }
@@ -108,11 +124,18 @@ public class GameController : MonoBehaviour
             else
             {
                 Cards aux = cardsStack.Pop();
-
-                aiValues += aux.Numero;
+                if (aux.IsAs)
+                {
+                    aiValues = aiValues > 10 ? aiValues + 1 : aiValues + 11;
+                }
+                else
+                {
+                    aiValues += aux.Numero;
+                }
                 aiAtualSpot.GetComponentsInChildren<Image>()[i].sprite = aux.Image;
             }
         }
+        aiCardsValue.OnValueChanged(aiValues);
 
         aiQtdCards++;
     }
