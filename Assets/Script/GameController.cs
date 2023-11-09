@@ -25,6 +25,11 @@ public class GameController : MonoBehaviour
     [SerializeField] private CardsValue myCardsValue;
     [SerializeField] private CardsValue aiCardsValue;
 
+    [SerializeField] private float bet;
+    [SerializeField] private InputMoney inputMoney;
+    [SerializeField] private GameObject btnInicio;
+    [SerializeField] private GameObject btnPartida;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -32,10 +37,6 @@ public class GameController : MonoBehaviour
         aiValues = 0;
         Shuffle(cards);
         cardsStack = new Stack<Cards>(cards);
-
-        MyCardsChange();
-        AiCardsChange();
-
     }
 
     // Update is called once per frame
@@ -56,7 +57,21 @@ public class GameController : MonoBehaviour
             list[randomIndex] = temp;
         }
     }
-    public void ButtonPress()
+    public void ButtonStart()
+    {
+        if (!inputMoney.input.text.Equals(""))
+        {            
+            float value = float.Parse(inputMoney.input.text);
+            PlayerController.instance.RemoveAmountMoney(value);
+            bet = value;
+            MyCardsChange();
+            AiCardsChange();
+            inputMoney.ResetValue();
+            btnInicio.SetActive(false);
+            btnPartida.SetActive(true);
+        }
+    }
+    public void ButtonContinue()
     {
         MyCardsChange();
         StartCoroutine(AiPlay());
