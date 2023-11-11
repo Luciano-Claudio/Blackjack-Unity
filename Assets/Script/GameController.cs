@@ -30,6 +30,9 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject btnInicio;
     [SerializeField] private GameObject btnPartida;
 
+    [SerializeField] private bool aiStop;
+    [SerializeField] private bool myStop;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -64,11 +67,13 @@ public class GameController : MonoBehaviour
             float value = float.Parse(inputMoney.input.text);
             PlayerController.instance.RemoveAmountMoney(value);
             bet = value;
+            myStop = aiStop = false;
             MyCardsChange();
             AiCardsChange();
             inputMoney.ResetValue();
             btnInicio.SetActive(false);
             btnPartida.SetActive(true);
+            ChecarFim();
         }
     }
     public void ButtonContinue()
@@ -81,6 +86,7 @@ public class GameController : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(.2f);
         AiCardsChange();
+        ChecarFim();
     }
         public void MyCardsChange()
     {
@@ -105,7 +111,7 @@ public class GameController : MonoBehaviour
                 Cards aux = cardsStack.Pop();
                 if (aux.IsAs)
                 {
-                    myValues = myValues > 10 ? myValues + 1 : myValues + 11;
+                    myValues = myValues + 11 > 21 ? myValues + 1 : myValues + 11;
                 }
                 else
                 {
@@ -141,7 +147,7 @@ public class GameController : MonoBehaviour
                 Cards aux = cardsStack.Pop();
                 if (aux.IsAs)
                 {
-                    aiValues = aiValues > 10 ? aiValues + 1 : aiValues + 11;
+                    myValues = myValues + 11 > 21 ? myValues + 1 : myValues + 11;
                 }
                 else
                 {
@@ -153,6 +159,25 @@ public class GameController : MonoBehaviour
         aiCardsValue.OnValueChanged(aiValues);
 
         aiQtdCards++;
+    }
+
+    private void ChecarFim()
+    {
+        if((aiValues == 21) || (myValues < aiValues && myStop && aiStop) || (myValues > 21))
+        {
+            FimDaPartida.instance.Lose();
+        }
+        else if ((myValues == 21) || (myValues > aiValues && myStop && aiStop) || (aiValues > 21))
+        {
+            FimDaPartida.instance.Win();
+            PlayerController.instance.AddAmountMoney(bet * 2);
+
+        }
+        else if((myValues == aiValues && myStop && aiStop))
+        {
+            FimDaPartida.instance.Draw();
+            PlayerController.instance.AddAmountMoney(bet);
+        }
     }
 
 
