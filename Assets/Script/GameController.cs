@@ -24,21 +24,25 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject btnNovaPartida;
     [SerializeField] private bool[] aiStop;
     [SerializeField] private bool myStop;
+    [SerializeField] private bool[] aiLose;
+    [SerializeField] private short ganhou;
     [SerializeField] private bool end;
     [SerializeField] private int myQtdCards = 2;
     [SerializeField] private int[] aiQtdCards;
     [SerializeField] private int totalAICount;
 
+    [field: SerializeField]
     public int MyValues { get; private set; }
+    [field: SerializeField]
     public int[] AiValues { get; private set; }
 
     void Start()
     {
         MyValues = 0;
-        aiCardsValue = new CardsValue[totalAICount];
         AiValues = new int[totalAICount];
         aiAtualSpot = new Transform[totalAICount];
         aiStop = new bool[totalAICount];
+        aiLose = new bool[totalAICount];
         aiQtdCards = new int[totalAICount];
 
         Shuffle(cards);
@@ -46,20 +50,14 @@ public class GameController : MonoBehaviour
 
         myAtualSpot = null;
         myQtdCards = 2;
-        Debug.Log(totalAICount);
         for (int aiIndex = 0; aiIndex < totalAICount; aiIndex++)
         {
-            aiCardsValue[aiIndex] = new CardsValue();
             aiAtualSpot[aiIndex] = null;
             aiQtdCards[aiIndex] = 2;
             aiStop[aiIndex] = false;
+            aiLose[aiIndex] = false;
             AiValues[aiIndex] = 0;
         }
-    }
-
-    void Update()
-    {
-        // Aqui pode ser adicionado código de atualização se necessário.
     }
 
     void Shuffle<T>(List<T> list)
@@ -94,10 +92,8 @@ public class GameController : MonoBehaviour
 
             for (int aiIndex = 0; aiIndex < totalAICount; aiIndex++)
             {
-                ChecarFim(aiIndex);
+                ChecarTurno(aiIndex);
             }
-
-            btnNovaPartida.SetActive(true);
         }
     }
 
@@ -106,26 +102,33 @@ public class GameController : MonoBehaviour
         MyCardsChange();
         for (int aiIndex = 0; aiIndex < totalAICount; aiIndex++)
         {
-            AiCardsChange(aiIndex);
-            ChecarFim(aiIndex);
+            ChecarTurno(aiIndex);
+            if (!end)
+            {
+                StartCoroutine(AiPlay());
+            }
         }
     }
 
     public void ButtonStop()
     {
+        if (myStop) return;
         myStop = true;
         StartCoroutine(AiPlay());
     }
 
     IEnumerator AiPlay()
     {
-        yield return new WaitForSecondsRealtime(.2f);
         for (int aiIndex = 0; aiIndex < totalAICount; aiIndex++)
         {
+            if (aiLose[aiIndex] || end) continue;
+            //desativar o botão e ativar o waiting
+            yield return new WaitForSecondsRealtime(.5f);
+            //ativar o botão e desativar o waiting
             AiCardsChange(aiIndex);
-            ChecarFim(aiIndex);
+            ChecarTurno(aiIndex);
         }
-        if (!end) StartCoroutine(AiPlay());
+        if (myStop && !end && !ChecarDerrotaIA()) StartCoroutine(AiPlay());
     }
 
     public void MyCardsChange()
@@ -218,51 +221,117 @@ public class GameController : MonoBehaviour
             System.Random r = new System.Random();
 
             int number = r.Next(1, 101);
-            if (number < 95) aiStop[aiIndex] = true;
+            if (number > 98) aiStop[aiIndex] = true;
         }
         else if (AiValues[aiIndex] == 18)
         {
             System.Random r = new System.Random();
 
             int number = r.Next(1, 101);
-            if (number < 90) aiStop[aiIndex] = true;
+            if (number > 95) aiStop[aiIndex] = true;
         }
         else if (AiValues[aiIndex] == 17)
         {
             System.Random r = new System.Random();
 
             int number = r.Next(1, 101);
-            if (number < 80) aiStop[aiIndex] = true;
+            if (number > 90) aiStop[aiIndex] = true;
         }
     }
 
-    private void ChecarFim(int aiIndex)
+    private void ChecarTurno(int aiIndex)
     {
-        if ((AiValues[aiIndex] == 21) || (MyValues < AiValues[aiIndex] && myStop && aiStop[aiIndex]) || (MyValues > 21))
+        if(AiValues[aiIndex] == 21 || MyValues > 21)
         {
-            end = true;
-            FimDaPartida.instance.Lose();
-            btnPartida.SetActive(false);
-            btnNovaPartida.SetActive(true);
+            Debug.Log("Perdeu pq deu 21 no ads");
+            Derrota();
+            return;
         }
-        else if ((MyValues == 21) || (MyValues > AiValues[aiIndex] && myStop && aiStop[aiIndex]) || (AiValues[aiIndex] > 21))
+        else if (MyValues == 21)
         {
-            end = true;
-            FimDaPartida.instance.Win(bet * 2);
-            PlayerController.instance.AddAmountMoney(bet * 2);
-            btnPartida.SetActive(false);
-            btnNovaPartida.SetActive(true);
+            Debug.Log("Venceu pq deu 21");
+            Vitoria();
+            return;
         }
-        else if ((MyValues == AiValues[aiIndex] && myStop && aiStop[aiIndex]))
+        else if (AiValues[aiIndex] > 21)
         {
-            end = true;
-            FimDaPartida.instance.Draw(bet);
-            PlayerController.instance.AddAmountMoney(bet);
-            btnPartida.SetActive(false);
-            btnNovaPartida.SetActive(true);
+            AiValues[aiIndex] = 0;
+            aiStop[aiIndex] = aiLose[aiIndex] = true;
+        }
+        if (ChecarDerrotaIA())
+        {
+            Debug.Log("Venceu pq geral perdeu");
+            Vitoria();
+            return;
+        }
+        else if (myStop)
+        {
+            if (AllStop())
+            {
+                if (AiValues.Max() > MyValues)
+                {
+                    Debug.Log("Perdeu pq parou e outro deu maior");
+                    Derrota();
+                    return;
+                }
+                else if (AiValues.Max() < MyValues)
+                {
+                    Debug.Log("Venceu pq deu maior no final");
+                    Vitoria();
+                    return;
+                }
+                else
+                {
+                    Empate();
+                    return;
+                }
+            }
         }
     }
-
+    private bool ChecarDerrotaIA()
+    {
+        end = true;
+        foreach (bool lose in aiLose)
+        {
+            if (!lose)
+            {
+                end = false;
+                return end;
+            }
+        }
+        return end;
+    }
+    private bool AllStop()
+    {
+        foreach(bool stop in aiStop)
+        {
+            if (!stop) return false;
+        }
+        return true;
+    }
+    private void Vitoria()
+    {
+        end = true;
+        FimDaPartida.instance.Win(bet * 2);
+        PlayerController.instance.AddAmountMoney(bet * 2);
+        btnPartida.SetActive(false);
+        btnNovaPartida.SetActive(true);
+    }
+    private void Derrota()
+    {
+        end = true;
+        FimDaPartida.instance.Lose();
+        btnPartida.SetActive(false);
+        btnNovaPartida.SetActive(true);
+    }
+    private void Empate()
+    {
+        end = true;
+        FimDaPartida.instance.Draw(bet);
+        PlayerController.instance.AddAmountMoney(bet);
+        btnPartida.SetActive(false);
+        btnNovaPartida.SetActive(true);
+    }
 
     public void Reset()
     {
@@ -271,9 +340,11 @@ public class GameController : MonoBehaviour
         for (int i = 0; i < totalAICount; i++)
         {
             aiAtualSpot[i].gameObject.SetActive(false);
+            aiAtualSpot[i] = null;
             AiValues[i] = 0;
             aiQtdCards[i] = 2;
             aiStop[i] = false;
+            aiLose[i] = false;
         }
 
         myAtualSpot = null;
