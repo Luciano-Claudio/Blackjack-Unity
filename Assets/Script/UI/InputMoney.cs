@@ -26,9 +26,9 @@ public class InputMoney : MonoBehaviour
         if (!str.Equals(""))
         {
             str = GetNumbers(str);
-            if (float.Parse(str) > PlayerController.instance.AmoutMoney)
+            if (float.Parse(str) > PlayerController.instance.player.AmoutMoney)
             {
-                str = PlayerController.instance.AmoutMoney.ToString();
+                str = PlayerController.instance.player.AmoutMoney.ToString();
             }
             input.text = str;
         }

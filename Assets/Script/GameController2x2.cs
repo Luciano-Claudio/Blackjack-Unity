@@ -11,11 +11,14 @@ public class GameController2x2 : MonoBehaviour
     [SerializeField] private List<Cards> cards;
     [SerializeField] private Stack<Cards> cardsStack;
 
+    [SerializeField] private GameObject LoadingGif;
     [SerializeField] private GameObject myLocalCards;
     [SerializeField] private GameObject aiLocalCards;
-    [SerializeField] private GameObject alliedAILocalCards; // Nova variável para a IA aliada
-    [SerializeField] private GameObject enemyAILocalCards;  // Nova variável para a IA adversária
+    [SerializeField] private GameObject alliedAILocalCards;
+    [SerializeField] private GameObject enemyAILocalCards;
 
+    public int sumAllyValues { get; set; }
+    public int sumAiValues { get; set; }
     public int myValues { get; private set; }
     public int aiValues { get; private set; }
     public int alliedaiValues { get; private set; }
@@ -35,14 +38,22 @@ public class GameController2x2 : MonoBehaviour
     [SerializeField] private CardsValue aiCardsValue;
     [SerializeField] private CardsValue alliedAICardsValue;
     [SerializeField] private CardsValue enemyAICardsValue;
+    [SerializeField] private CardsValue totalEnemyAICardsValue;
+    [SerializeField] private CardsValue totalAllyCardsValue;
 
     [SerializeField] private float bet;
     [SerializeField] private InputMoney inputMoney;
     [SerializeField] private GameObject btnInicio;
     [SerializeField] private GameObject btnPartida;
+    [SerializeField] private GameObject btnNovaPartida;
 
-    [SerializeField] private bool aiStop;
     [SerializeField] private bool myStop;
+    [SerializeField] private bool aiStop;
+    [SerializeField] private bool enemyAIStop;
+    [SerializeField] private bool alliedAIStop;
+
+    [SerializeField] private bool end;
+    [SerializeField] private Button continuarBtn;
 
     void Start()
     {
@@ -82,13 +93,13 @@ public class GameController2x2 : MonoBehaviour
         if (!inputMoney.input.text.Equals(""))
         {
             float value = float.Parse(inputMoney.input.text);
-            PlayerController.instance.RemoveAmountMoney(value);
             bet = value;
+            PlayerController.instance.RemoveAmountMoney(bet);
             myStop = aiStop = false;
             MyCardsChange();
             AiCardsChange();
-            AlliedAICardsChange();  // Novo método para a IA aliada
-            EnemyAICardsChange();   // Novo método para a IA adversária
+            AlliedAICardsChange();
+            EnemyAICardsChange();
             inputMoney.ResetValue();
             btnInicio.SetActive(false);
             btnPartida.SetActive(true);
@@ -101,25 +112,42 @@ public class GameController2x2 : MonoBehaviour
         MyCardsChange();
         ChecarFim();
         StartCoroutine(AiPlay());
-        AlliedAICardsChange();  // Novo método para a IA aliada
-        EnemyAICardsChange();   // Novo método para a IA adversária
+    }
+
+    public void ButtonStop()
+    {
+        if (myStop) return;
+        myStop = true;
+        StartCoroutine(AiPlay());
     }
 
     IEnumerator AiPlay()
     {
-        yield return new WaitForSecondsRealtime(.5f);
-        AiCardsChange();
-        ChecarFim();
-        yield return new WaitForSecondsRealtime(.5f);
-        AlliedAICardsChange();  // Novo método para a IA aliada
-        ChecarFim();
-        yield return new WaitForSecondsRealtime(.5f);
-        EnemyAICardsChange();   // Novo método para a IA adversária
-        ChecarFim();
+        if (!end)
+        {
+            yield return new WaitForSecondsRealtime(.5f);
+            AiCardsChange();
+            ChecarFim();
+        }
+        if (!end)
+        {
+            yield return new WaitForSecondsRealtime(.5f);
+            AlliedAICardsChange();
+            ChecarFim();
+        }
+        if (!end)
+        {
+            yield return new WaitForSecondsRealtime(.5f);
+            EnemyAICardsChange();
+            ChecarFim();
+        }
+
+        if(!end) StartCoroutine(AiPlay());
     }
 
     public void MyCardsChange()
     {
+        if (myStop) return;
         Transform auxSpot = null;
         if (myAtualSpot != null)
         {
@@ -151,12 +179,20 @@ public class GameController2x2 : MonoBehaviour
             }
         }
         myCardsValue.OnValueChanged(myValues);
+        sumAllyValues = myValues + alliedaiValues;
+        totalAllyCardsValue.OnValueChanged(sumAllyValues);
+
+        if (myValues == 21) ButtonStop();
 
         myQtdCards++;
     }
 
     public void AiCardsChange()
     {
+        CheckAiStop();
+
+        if (aiStop) return;
+
         Transform auxSpot = null;
         if (aiAtualSpot != null)
         {
@@ -188,12 +224,17 @@ public class GameController2x2 : MonoBehaviour
             }
         }
         aiCardsValue.OnValueChanged(aiValues);
+        sumAiValues = enemyaiValues + aiValues;
+        totalEnemyAICardsValue.OnValueChanged(sumAiValues);
 
         aiQtdCards++;
     }
 
-    public void AlliedAICardsChange()  // Novo método para a IA aliada
+    public void AlliedAICardsChange()
     {
+        CheckalliedStop();
+
+        if (alliedAIStop) return;
         Transform auxSpot = null;
         if (alliedAIAtualSpot != null)
         {
@@ -225,12 +266,17 @@ public class GameController2x2 : MonoBehaviour
             }
         }
         alliedAICardsValue.OnValueChanged(alliedaiValues);
+        sumAllyValues = myValues + alliedaiValues;
+        totalAllyCardsValue.OnValueChanged(sumAllyValues);
 
         alliedAIQtdCards++;
     }
 
-    public void EnemyAICardsChange()  // Novo método para a IA adversária
+    public void EnemyAICardsChange()
     {
+        CheckEnemyAIStop();
+
+        if (enemyAIStop) return;
         Transform auxSpot = null;
         if (enemyAIAtualSpot != null)
         {
@@ -262,28 +308,60 @@ public class GameController2x2 : MonoBehaviour
             }
         }
         enemyAICardsValue.OnValueChanged(enemyaiValues);
+        sumAiValues = enemyaiValues + aiValues;
+        totalEnemyAICardsValue.OnValueChanged(sumAiValues);
 
         enemyAIQtdCards++;
+    }
+    private void CheckalliedStop()
+    {
+        if (alliedAIStop) return;
+        if (sumAiValues > sumAllyValues && sumAiValues < 42) return;
+        if (sumAllyValues > sumAiValues && sumAllyValues > 38) return;
+        if (sumAiValues <= sumAllyValues && aiStop && enemyAIStop) alliedAIStop = true;
+        if (alliedaiValues >= 20) alliedAIStop = true;
+        else if (alliedaiValues == 19)
+        {
+            System.Random r = new System.Random();
+
+            int number = r.Next(1, 101);
+            if (number > 99) alliedAIStop = true;
+        }
+        else if (alliedaiValues == 18)
+        {
+            System.Random r = new System.Random();
+
+            int number = r.Next(1, 101);
+            if (number > 98) alliedAIStop = true;
+        }
+        else if (alliedaiValues == 17)
+        {
+            System.Random r = new System.Random();
+
+            int number = r.Next(1, 101);
+            if (number > 90) alliedAIStop = true;
+        }
     }
     private void CheckAiStop()
     {
         if (aiStop) return;
-        if (myValues > aiValues && myValues < 21) return;
-        if (myValues < aiValues && myStop) aiStop = true;
-        else if (aiValues == 20) aiStop = true;
+        if (sumAllyValues > sumAiValues && sumAllyValues < 42) return;
+        if (sumAiValues > sumAllyValues && sumAiValues > 38) return;
+        if (sumAllyValues <= sumAiValues && myStop && alliedAIStop) aiStop = true;
+        if (aiValues >= 20) aiStop = true;
         else if (aiValues == 19)
         {
             System.Random r = new System.Random();
 
             int number = r.Next(1, 101);
-            if (number > 98) aiStop = true;
+            if (number > 99) aiStop = true;
         }
         else if (aiValues == 18)
         {
             System.Random r = new System.Random();
 
             int number = r.Next(1, 101);
-            if (number > 95) aiStop = true;
+            if (number > 98) aiStop = true;
         }
         else if (aiValues == 17)
         {
@@ -293,41 +371,109 @@ public class GameController2x2 : MonoBehaviour
             if (number > 90) aiStop = true;
         }
     }
+    private void CheckEnemyAIStop()
+    {
+        if (enemyAIStop) return;
+        if (sumAllyValues > sumAiValues && sumAllyValues < 42) return;
+        if (sumAiValues > sumAllyValues && sumAiValues > 38) return;
+        if (sumAllyValues <= sumAiValues && myStop && alliedAIStop) aiStop = true;
+        if (enemyaiValues >= 20) enemyAIStop = true;
+        else if (enemyaiValues == 19)
+        {
+            System.Random r = new System.Random();
+
+            int number = r.Next(1, 101);
+            if (number > 99) enemyAIStop = true;
+        }
+        else if (enemyaiValues == 18)
+        {
+            System.Random r = new System.Random();
+
+            int number = r.Next(1, 101);
+            if (number > 98) enemyAIStop = true;
+        }
+        else if (enemyaiValues == 17)
+        {
+            System.Random r = new System.Random();
+
+            int number = r.Next(1, 101);
+            if (number > 90) enemyAIStop = true;
+        }
+    }
 
     private void ChecarFim()
     {
-        if ((aiValues == 21) || (myValues < aiValues && myStop && aiStop) || (myValues > 21))
+        if ((sumAiValues == 42 && aiValues == 21 && enemyaiValues == 21) || (sumAllyValues < sumAiValues && myStop && alliedAIStop && enemyAIStop && aiStop) || (myValues > 21 || alliedaiValues > 21))
         {
-            //FimDaPartida.instance.Lose();
+            end = true;
+            FimDaPartida.instance.Lose();
+            StartCoroutine(Load());
         }
-        else if ((myValues == 21) || (myValues > aiValues && myStop && aiStop) || (aiValues > 21))
+        else if ((sumAllyValues == 42 && myValues == 21 && alliedaiValues == 21) || (sumAllyValues > sumAiValues && myStop && alliedAIStop && enemyAIStop && aiStop) || (aiValues > 21 || enemyaiValues > 21))
         {
-            //FimDaPartida.instance.Win();
-            //PlayerController.instance.AddAmountMoney(bet * 2);
+            end = true;
+            FimDaPartida.instance.Win(bet * 2);
+            PlayerController.instance.AddAmountMoney(bet * 2);
+            StartCoroutine(Load());
         }
-        else if ((myValues == aiValues && myStop && aiStop))
+        else if ((sumAllyValues == sumAiValues && myStop && alliedAIStop && enemyAIStop && aiStop))
         {
-            //FimDaPartida.instance.Draw();
-            //PlayerController.instance.AddAmountMoney(bet);
+            end = true;
+            FimDaPartida.instance.Draw(bet);
+            PlayerController.instance.AddAmountMoney(bet);
+            StartCoroutine(Load());
         }
+    }
 
-        // Checando também para a IA aliada e adversária
-        if ((alliedaiValues == 21) || (myValues < alliedaiValues && myStop) || (myValues > 21))
-        {
-            // Lógica para a IA aliada
-        }
-        else if ((myValues == 21) || (myValues > alliedaiValues && myStop) || (alliedaiValues > 21))
-        {
-            // Lógica para a IA aliada
-        }
+    IEnumerator Load()
+    {
+        continuarBtn.interactable = true;
+        btnPartida.SetActive(false);
+        LoadingGif.SetActive(true);
+        yield return new WaitForSecondsRealtime(.5f);
+        LoadingGif.SetActive(false);
+        btnNovaPartida.SetActive(true);
+    }
+    public void Reset()
+    {
+        sumAiValues = 0;
+        sumAllyValues = 0;
+        alliedAIAtualSpot.gameObject.SetActive(false);
+        alliedAIAtualSpot = null;
+        alliedaiValues = 0;
+        alliedAIQtdCards = 2;
+        alliedAIStop = false;
 
-        if ((enemyaiValues == 21) || (myValues < enemyaiValues && myStop) || (myValues > 21))
-        {
-            // Lógica para a IA adversária
-        }
-        else if ((myValues == 21) || (myValues > enemyaiValues && myStop) || (enemyaiValues > 21))
-        {
-            // Lógica para a IA adversária
-        }
+        aiAtualSpot.gameObject.SetActive(false);
+        aiAtualSpot = null;
+        aiValues = 0;
+        aiQtdCards = 2;
+        aiStop = false;
+
+        enemyAIAtualSpot.gameObject.SetActive(false);
+        enemyAIAtualSpot = null;
+        enemyaiValues = 0;
+        enemyAIQtdCards = 2;
+        enemyAIStop = false;
+
+        myAtualSpot.gameObject.SetActive(false);
+        myAtualSpot = null;
+        myValues = 0;
+        myQtdCards = 2;
+        end = myStop = false;
+
+        Shuffle(cards);
+        cardsStack = new Stack<Cards>(cards);
+        FimDaPartida.instance.CloseAll();
+        myCardsValue.OnValueChanged(myValues);
+        alliedAICardsValue.OnValueChanged(myValues);
+        totalEnemyAICardsValue.OnValueChanged(sumAiValues);
+
+        aiCardsValue.OnValueChanged(aiValues);
+        totalAllyCardsValue.OnValueChanged(sumAllyValues);
+        enemyAICardsValue.OnValueChanged(aiValues);
+
+        btnNovaPartida.SetActive(false);
+        btnInicio.SetActive(true);
     }
 }

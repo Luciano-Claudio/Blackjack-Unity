@@ -15,4 +15,8 @@ public class CardsValue : MonoBehaviour
     {
         txt.text = "Soma " + value;
     }
+    public void OnValueTotalChanged(int value)
+    {
+        txt.text = "Soma Total " + value;
+    }
 }

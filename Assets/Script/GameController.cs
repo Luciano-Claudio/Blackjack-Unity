@@ -11,6 +11,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private List<Cards> cards;
     [SerializeField] private Stack<Cards> cardsStack;
 
+    [SerializeField] private GameObject LoadingGif;
     [SerializeField] private GameObject myLocalCards;
     [SerializeField] private GameObject[] aiLocalCards;
     [SerializeField] private Transform myAtualSpot = null;
@@ -30,6 +31,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private int myQtdCards = 2;
     [SerializeField] private int[] aiQtdCards;
     [SerializeField] private int totalAICount;
+    [SerializeField] private Button continuarBtn;
 
     [field: SerializeField]
     public int MyValues { get; private set; }
@@ -114,6 +116,7 @@ public class GameController : MonoBehaviour
     {
         if (myStop) return;
         myStop = true;
+        continuarBtn.interactable = false;
         StartCoroutine(AiPlay());
     }
 
@@ -228,7 +231,7 @@ public class GameController : MonoBehaviour
             System.Random r = new System.Random();
 
             int number = r.Next(1, 101);
-            if (number > 95) aiStop[aiIndex] = true;
+            if (number > 98) aiStop[aiIndex] = true;
         }
         else if (AiValues[aiIndex] == 17)
         {
@@ -243,13 +246,11 @@ public class GameController : MonoBehaviour
     {
         if(AiValues[aiIndex] == 21 || MyValues > 21)
         {
-            Debug.Log("Perdeu pq deu 21 no ads");
             Derrota();
             return;
         }
         else if (MyValues == 21)
         {
-            Debug.Log("Venceu pq deu 21");
             Vitoria();
             return;
         }
@@ -260,7 +261,6 @@ public class GameController : MonoBehaviour
         }
         if (ChecarDerrotaIA())
         {
-            Debug.Log("Venceu pq geral perdeu");
             Vitoria();
             return;
         }
@@ -270,13 +270,11 @@ public class GameController : MonoBehaviour
             {
                 if (AiValues.Max() > MyValues)
                 {
-                    Debug.Log("Perdeu pq parou e outro deu maior");
                     Derrota();
                     return;
                 }
                 else if (AiValues.Max() < MyValues)
                 {
-                    Debug.Log("Venceu pq deu maior no final");
                     Vitoria();
                     return;
                 }
@@ -314,22 +312,29 @@ public class GameController : MonoBehaviour
         end = true;
         FimDaPartida.instance.Win(bet * 2);
         PlayerController.instance.AddAmountMoney(bet * 2);
-        btnPartida.SetActive(false);
-        btnNovaPartida.SetActive(true);
+        StartCoroutine(Load());
     }
     private void Derrota()
     {
         end = true;
         FimDaPartida.instance.Lose();
-        btnPartida.SetActive(false);
-        btnNovaPartida.SetActive(true);
+        StartCoroutine(Load());
     }
     private void Empate()
     {
         end = true;
         FimDaPartida.instance.Draw(bet);
         PlayerController.instance.AddAmountMoney(bet);
+        StartCoroutine(Load());
+    }
+
+    IEnumerator Load()
+    {
+        continuarBtn.interactable = true;
         btnPartida.SetActive(false);
+        LoadingGif.SetActive(true);
+        yield return new WaitForSecondsRealtime(.5f);
+        LoadingGif.SetActive(false);
         btnNovaPartida.SetActive(true);
     }
 
