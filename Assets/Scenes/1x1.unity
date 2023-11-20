@@ -791,7 +791,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1411622749}
+      - m_Target: {fileID: 1172515436}
         m_TargetAssemblyTypeName: ChangeScene, Assembly-CSharp
         m_MethodName: ChangeSceneStr
         m_Mode: 5
@@ -6515,6 +6515,7 @@ GameObject:
   - component: {fileID: 1172515432}
   - component: {fileID: 1172515431}
   - component: {fileID: 1172515435}
+  - component: {fileID: 1172515436}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -6624,6 +6625,18 @@ MonoBehaviour:
   DrawBanner: {fileID: 1021616474}
   txtWin: {fileID: 1738534722}
   txtDraw: {fileID: 611582941}
+--- !u!114 &1172515436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1172515430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06ba2381705477f45b6e666f4df4757b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1202836943
 GameObject:
   m_ObjectHideFlags: 0
@@ -7440,7 +7453,6 @@ GameObject:
   - component: {fileID: 1411622748}
   - component: {fileID: 1411622747}
   - component: {fileID: 1411622746}
-  - component: {fileID: 1411622749}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -7568,18 +7580,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1411622749
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1411622745}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06ba2381705477f45b6e666f4df4757b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1442969398
 GameObject:
   m_ObjectHideFlags: 0

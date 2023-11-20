@@ -5,6 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class Player : MonoBehaviour
 {
+    //englider1+blackjackunity@gmail.com
     [field: SerializeField]
     public string Name { get; private set; }
     public string Senha { get; private set; }

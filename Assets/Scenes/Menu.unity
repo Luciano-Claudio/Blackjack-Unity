@@ -3155,10 +3155,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Content: {fileID: 1178046336}
-  RankingPrefabs:
-  - {fileID: 2174279793211049828, guid: 0ae3b22576027d34b8352b6c1f7a2539, type: 3}
-  - {fileID: 2174279793211049828, guid: 0ae3b22576027d34b8352b6c1f7a2539, type: 3}
-  - {fileID: 2174279793211049828, guid: 0ae3b22576027d34b8352b6c1f7a2539, type: 3}
+  prefab: {fileID: 2174279793211049828, guid: 0ae3b22576027d34b8352b6c1f7a2539, type: 3}
 --- !u!1 &1246854286
 GameObject:
   m_ObjectHideFlags: 0
@@ -5643,7 +5640,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2174279793211049828, guid: 0ae3b22576027d34b8352b6c1f7a2539, type: 3}
       propertyPath: m_Name
-      value: GameObject
+      value: Row
       objectReference: {fileID: 0}
     - target: {fileID: 2705279488217431580, guid: 0ae3b22576027d34b8352b6c1f7a2539, type: 3}
       propertyPath: m_AnchorMax.y
