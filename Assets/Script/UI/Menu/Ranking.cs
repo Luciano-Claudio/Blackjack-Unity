@@ -6,17 +6,27 @@ using System.Linq;
 
 public class Ranking : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI nome;
-    [SerializeField] private TextMeshProUGUI x1;
-    [SerializeField] private TextMeshProUGUI x2;
-    [SerializeField] private TextMeshProUGUI x3;
-    [SerializeField] private TextMeshProUGUI x22;
-    void Start()
+    public GameObject Content;
+    public GameObject prefab;
+    public List<Row> data;
+    private void Start()
     {
+        data = APIConnections.instance.data;
     }
 
-    void Update()
+    public void ChangeRanking()
     {
-        
+        data.Sort();
+        foreach (Row r in data)
+        {
+            Content.SetActive(true);
+            GameObject c = Instantiate(prefab, Content.transform);
+            Transform panel = c.transform.Find("Panel");
+            panel.Find("Nome").GetComponent<TextMeshProUGUI>().text = r.username;
+            panel.Find("1x1").GetComponent<TextMeshProUGUI>().text = r.x1.ToString();
+            panel.Find("1x2").GetComponent<TextMeshProUGUI>().text = r.x2.ToString();
+            panel.Find("1x3").GetComponent<TextMeshProUGUI>().text = r.x3.ToString();
+            panel.Find("2x2").GetComponent<TextMeshProUGUI>().text = r.x22.ToString();
+        }
     }
 }

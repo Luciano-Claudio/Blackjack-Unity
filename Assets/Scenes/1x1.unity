@@ -6625,6 +6625,7 @@ MonoBehaviour:
   DrawBanner: {fileID: 1021616474}
   txtWin: {fileID: 1738534722}
   txtDraw: {fileID: 611582941}
+  moneyUi: {fileID: 1629666602}
 --- !u!114 &1172515436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7472,8 +7473,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed23c668e24cb8a4abb06091b1a8ca0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <player>k__BackingField: {fileID: 0}
-  Ui: {fileID: 1629666602}
+  <player>k__BackingField:
+    <Name>k__BackingField: 
+    AmoutMoney: 0
+    Victory1x1: 0
+    Victory1x2: 0
+    Victory1x3: 0
+    Victory2x2: 0
+    index: 0
 --- !u!114 &1411622747
 MonoBehaviour:
   m_ObjectHideFlags: 0

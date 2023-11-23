@@ -81,8 +81,8 @@ public class GameController : MonoBehaviour
         if (!inputMoney.input.text.Equals(""))
         {
             float value = float.Parse(inputMoney.input.text);
-            PlayerController.instance.RemoveAmountMoney(value);
             bet = value;
+            FimDaPartida.instance.FakeRemove(bet);
             MyCardsChange();
             for (int aiIndex = 0; aiIndex < totalAICount; aiIndex++)
             {
@@ -125,11 +125,19 @@ public class GameController : MonoBehaviour
         for (int aiIndex = 0; aiIndex < totalAICount; aiIndex++)
         {
             if (aiLose[aiIndex] || end) continue;
+            btnPartida.SetActive(false);
+            LoadingGif.SetActive(true);
             //desativar o botão e ativar o waiting
             yield return new WaitForSecondsRealtime(.5f);
             //ativar o botão e desativar o waiting
             AiCardsChange(aiIndex);
             ChecarTurno(aiIndex);
+        }
+        if (!myStop && !end)
+        {
+            btnPartida.SetActive(true);
+
+            LoadingGif.SetActive(false);
         }
         if (myStop && !end && !ChecarDerrotaIA()) StartCoroutine(AiPlay());
     }
@@ -310,21 +318,24 @@ public class GameController : MonoBehaviour
     private void Vitoria()
     {
         end = true;
+        LoadingGif.SetActive(false);
         FimDaPartida.instance.Win(bet * 2);
-        PlayerController.instance.AddAmountMoney(bet * 2);
+        PlayerController.instance.AddAmountMoney(bet);
         StartCoroutine(Load());
     }
     private void Derrota()
     {
         end = true;
+        LoadingGif.SetActive(false);
         FimDaPartida.instance.Lose();
+        PlayerController.instance.RemoveAmountMoney(bet);
         StartCoroutine(Load());
     }
     private void Empate()
     {
         end = true;
+        LoadingGif.SetActive(false);
         FimDaPartida.instance.Draw(bet);
-        PlayerController.instance.AddAmountMoney(bet);
         StartCoroutine(Load());
     }
 

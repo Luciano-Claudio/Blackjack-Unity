@@ -8,35 +8,30 @@ public class PlayerController : MonoBehaviour
 
     [field: SerializeField] public Player player { get; private set; }
 
+    public delegate void ValueHandler();
+    public event ValueHandler ValueChanged;
+
     private void Awake()
     {
-        player = new Player();
-        if(instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
-
-    [SerializeField] private MoneyUi Ui;
-    void Start()
-    {
-        Ui.OnMoneyChanged(player.AmoutMoney);
+        if (instance == null) instance = this;
+        player = APIConnections.instance.player;
     }
 
     public void AddAmountMoney(float amount)
     {
         player.AmoutMoney += amount;
-        Ui.OnMoneyChanged(player.AmoutMoney);
+        APIConnections.instance.data[player.index] = player.PlayerToRow();
+        APIConnections.instance.SendAccountDynamoDB(player.PlayerToRow());
+        if (ValueChanged != null)
+            ValueChanged();
     }
 
     public void RemoveAmountMoney(float amount)
     {
         player.AmoutMoney -= amount;
-        Ui.OnMoneyChanged(player.AmoutMoney);
+        APIConnections.instance.data[player.index] = player.PlayerToRow();
+        APIConnections.instance.SendAccountDynamoDB(player.PlayerToRow());
+        if (ValueChanged != null)
+            ValueChanged();
     }
 }

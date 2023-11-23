@@ -5,14 +5,18 @@ using TMPro;
 
 public class MoneyUi : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI txt;
-
+    public TextMeshProUGUI txt;
     private void Awake()
     {
         txt = GetComponent<TextMeshProUGUI>();
     }
-    public void OnMoneyChanged(float value)
+    private void Start()
     {
-        txt.text = value.ToString("F");
+        PlayerController.instance.ValueChanged += OnMoneyChanged;
+        OnMoneyChanged();
+    }
+    public void OnMoneyChanged()
+    {
+        txt.text = PlayerController.instance.player.AmoutMoney.ToString("F");
     }
 }

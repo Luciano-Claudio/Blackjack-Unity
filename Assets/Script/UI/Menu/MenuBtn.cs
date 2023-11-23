@@ -6,6 +6,7 @@ public class MenuBtn : MonoBehaviour
 {
     [SerializeField] private GameObject NewGamePanel;
     [SerializeField] private GameObject RankingPanel;
+    [SerializeField] private GameObject FichaPanel;
     public void ClickNewGame()
     {
         NewGamePanel.SetActive(true);
@@ -21,5 +22,13 @@ public class MenuBtn : MonoBehaviour
     public void ExitRanking()
     {
         RankingPanel.SetActive(false);
+    }
+    public void ClickFicha()
+    {
+        FichaPanel.SetActive(true);
+    }
+    public void ExitFicha()
+    {
+        FichaPanel.SetActive(false);
     }
 }

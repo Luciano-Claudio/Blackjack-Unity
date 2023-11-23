@@ -11,9 +11,14 @@ public class FimDaPartida : MonoBehaviour
     public static FimDaPartida instance;
     public TextMeshProUGUI txtWin;
     public TextMeshProUGUI txtDraw;
+    public MoneyUi moneyUi;
     private void Awake()
     {
         instance = this;
+    }
+    public void FakeRemove(float bet)
+    {
+        moneyUi.txt.text = (PlayerController.instance.player.AmoutMoney - bet).ToString("F");
     }
     public void Win(float bet)
     {

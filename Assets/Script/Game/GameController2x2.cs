@@ -94,7 +94,7 @@ public class GameController2x2 : MonoBehaviour
         {
             float value = float.Parse(inputMoney.input.text);
             bet = value;
-            PlayerController.instance.RemoveAmountMoney(bet);
+            FimDaPartida.instance.FakeRemove(bet);
             myStop = aiStop = false;
             MyCardsChange();
             AiCardsChange();
@@ -118,31 +118,40 @@ public class GameController2x2 : MonoBehaviour
     {
         if (myStop) return;
         myStop = true;
+        continuarBtn.interactable = false;
         StartCoroutine(AiPlay());
     }
 
     IEnumerator AiPlay()
     {
+        btnPartida.SetActive(false);
+        LoadingGif.SetActive(true);
         if (!end)
         {
-            yield return new WaitForSecondsRealtime(.5f);
+            yield return new WaitForSecondsRealtime(1f);
             AiCardsChange();
             ChecarFim();
         }
         if (!end)
         {
-            yield return new WaitForSecondsRealtime(.5f);
+            yield return new WaitForSecondsRealtime(1f);
             AlliedAICardsChange();
             ChecarFim();
         }
         if (!end)
         {
-            yield return new WaitForSecondsRealtime(.5f);
+            yield return new WaitForSecondsRealtime(1f);
             EnemyAICardsChange();
             ChecarFim();
         }
+        if (!myStop && !end)
+        {
+            btnPartida.SetActive(true);
 
-        if(!end) StartCoroutine(AiPlay());
+            LoadingGif.SetActive(false);
+        }
+
+        if (!end && myStop) StartCoroutine(AiPlay());
     }
 
     public void MyCardsChange()
@@ -317,7 +326,7 @@ public class GameController2x2 : MonoBehaviour
     {
         if (alliedAIStop) return;
         if (sumAiValues > sumAllyValues && sumAiValues < 42) return;
-        if (sumAllyValues > sumAiValues && sumAllyValues > 38) return;
+        if (sumAllyValues > sumAiValues && sumAllyValues > 38) alliedAIStop = true;
         if (sumAiValues <= sumAllyValues && aiStop && enemyAIStop) alliedAIStop = true;
         if (alliedaiValues >= 20) alliedAIStop = true;
         else if (alliedaiValues == 19)
@@ -346,7 +355,7 @@ public class GameController2x2 : MonoBehaviour
     {
         if (aiStop) return;
         if (sumAllyValues > sumAiValues && sumAllyValues < 42) return;
-        if (sumAiValues > sumAllyValues && sumAiValues > 38) return;
+        if (sumAiValues > sumAllyValues && sumAiValues > 38) aiStop = true;
         if (sumAllyValues <= sumAiValues && myStop && alliedAIStop) aiStop = true;
         if (aiValues >= 20) aiStop = true;
         else if (aiValues == 19)
@@ -375,7 +384,7 @@ public class GameController2x2 : MonoBehaviour
     {
         if (enemyAIStop) return;
         if (sumAllyValues > sumAiValues && sumAllyValues < 42) return;
-        if (sumAiValues > sumAllyValues && sumAiValues > 38) return;
+        if (sumAiValues > sumAllyValues && sumAiValues > 38) aiStop = true;
         if (sumAllyValues <= sumAiValues && myStop && alliedAIStop) aiStop = true;
         if (enemyaiValues >= 20) enemyAIStop = true;
         else if (enemyaiValues == 19)
@@ -406,21 +415,24 @@ public class GameController2x2 : MonoBehaviour
         if ((sumAiValues == 42 && aiValues == 21 && enemyaiValues == 21) || (sumAllyValues < sumAiValues && myStop && alliedAIStop && enemyAIStop && aiStop) || (myValues > 21 || alliedaiValues > 21))
         {
             end = true;
+            LoadingGif.SetActive(false);
             FimDaPartida.instance.Lose();
+            PlayerController.instance.RemoveAmountMoney(bet);
             StartCoroutine(Load());
         }
         else if ((sumAllyValues == 42 && myValues == 21 && alliedaiValues == 21) || (sumAllyValues > sumAiValues && myStop && alliedAIStop && enemyAIStop && aiStop) || (aiValues > 21 || enemyaiValues > 21))
         {
             end = true;
+            LoadingGif.SetActive(false);
             FimDaPartida.instance.Win(bet * 2);
-            PlayerController.instance.AddAmountMoney(bet * 2);
+            PlayerController.instance.AddAmountMoney(bet);
             StartCoroutine(Load());
         }
         else if ((sumAllyValues == sumAiValues && myStop && alliedAIStop && enemyAIStop && aiStop))
         {
             end = true;
+            LoadingGif.SetActive(false);
             FimDaPartida.instance.Draw(bet);
-            PlayerController.instance.AddAmountMoney(bet);
             StartCoroutine(Load());
         }
     }
