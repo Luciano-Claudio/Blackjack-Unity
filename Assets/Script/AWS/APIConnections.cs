@@ -100,6 +100,9 @@ public class APIConnections : MonoBehaviour
             + "\""
             + "}";
         Debug.Log(json);
+        data.RemoveAt(player.index);
+        data.Add(row);
+        player.index = data.IndexOf(row);
         www.uploadHandler = new UploadHandlerRaw(new System.Text.UTF8Encoding().GetBytes(json));
         www.downloadHandler = new DownloadHandlerBuffer();
         yield return www.SendWebRequest();
@@ -125,5 +128,6 @@ public class APIConnections : MonoBehaviour
         if(!row.password.Equals(password)) throw new AccountException("senha incorreta!");
         
         player = new Player(row, data.IndexOf(row));
+        Debug.Log(data.IndexOf(row));
     }
 }

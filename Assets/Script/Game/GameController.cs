@@ -254,6 +254,11 @@ public class GameController : MonoBehaviour
     {
         if(AiValues[aiIndex] == 21 || MyValues > 21)
         {
+            if(MyValues == 21)
+            {
+                Empate();
+                return;
+            }
             Derrota();
             return;
         }
@@ -320,7 +325,7 @@ public class GameController : MonoBehaviour
         end = true;
         LoadingGif.SetActive(false);
         FimDaPartida.instance.Win(bet * 2);
-        PlayerController.instance.AddAmountMoney(bet);
+        PlayerController.instance.AddAmountMoney(bet, totalAICount);
         StartCoroutine(Load());
     }
     private void Derrota()

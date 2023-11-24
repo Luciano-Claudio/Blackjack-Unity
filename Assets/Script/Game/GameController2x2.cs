@@ -326,7 +326,7 @@ public class GameController2x2 : MonoBehaviour
     {
         if (alliedAIStop) return;
         if (sumAiValues > sumAllyValues && sumAiValues < 42) return;
-        if (sumAllyValues > sumAiValues && sumAllyValues > 38) alliedAIStop = true;
+        if (sumAllyValues > sumAiValues && sumAllyValues >= 37) alliedAIStop = true;
         if (sumAiValues <= sumAllyValues && aiStop && enemyAIStop) alliedAIStop = true;
         if (alliedaiValues >= 20) alliedAIStop = true;
         else if (alliedaiValues == 19)
@@ -355,7 +355,7 @@ public class GameController2x2 : MonoBehaviour
     {
         if (aiStop) return;
         if (sumAllyValues > sumAiValues && sumAllyValues < 42) return;
-        if (sumAiValues > sumAllyValues && sumAiValues > 38) aiStop = true;
+        if (sumAiValues > sumAllyValues && sumAiValues >= 37) aiStop = true;
         if (sumAllyValues <= sumAiValues && myStop && alliedAIStop) aiStop = true;
         if (aiValues >= 20) aiStop = true;
         else if (aiValues == 19)
@@ -384,7 +384,7 @@ public class GameController2x2 : MonoBehaviour
     {
         if (enemyAIStop) return;
         if (sumAllyValues > sumAiValues && sumAllyValues < 42) return;
-        if (sumAiValues > sumAllyValues && sumAiValues > 38) aiStop = true;
+        if (sumAiValues > sumAllyValues && sumAiValues >= 37) aiStop = true;
         if (sumAllyValues <= sumAiValues && myStop && alliedAIStop) aiStop = true;
         if (enemyaiValues >= 20) enemyAIStop = true;
         else if (enemyaiValues == 19)
@@ -425,7 +425,7 @@ public class GameController2x2 : MonoBehaviour
             end = true;
             LoadingGif.SetActive(false);
             FimDaPartida.instance.Win(bet * 2);
-            PlayerController.instance.AddAmountMoney(bet);
+            PlayerController.instance.AddAmountMoney(bet, 4);
             StartCoroutine(Load());
         }
         else if ((sumAllyValues == sumAiValues && myStop && alliedAIStop && enemyAIStop && aiStop))

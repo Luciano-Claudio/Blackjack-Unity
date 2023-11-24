@@ -5,6 +5,7 @@ using UnityEngine;
 public class ConfigBtn : MonoBehaviour
 {
     public GameObject MenuPanel;
+    [SerializeField] private GameObject FichaPanel;
     public void ConfigClick()
     {
         MenuPanel.SetActive(true);
@@ -12,5 +13,13 @@ public class ConfigBtn : MonoBehaviour
     public void ConfigClose()
     {
         MenuPanel.SetActive(false);
+    }
+    public void ClickFicha()
+    {
+        FichaPanel.SetActive(true);
+    }
+    public void ExitFicha()
+    {
+        FichaPanel.SetActive(false);
     }
 }

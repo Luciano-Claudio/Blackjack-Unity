@@ -30,7 +30,7 @@ public class ComprarFicha : MonoBehaviour
     {
         if (PodeClicarNoBotaoHoje())
         {
-            PlayerController.instance.AddAmountMoney(10000);
+            PlayerController.instance.AddAmountMoney(10000, 0);
             PlayerPrefs.SetString(CHAVE_ULTIMO_CLIQUE, DateTime.Now.ToString(FORMATO_DATA));
 
             AtualizarBotao();

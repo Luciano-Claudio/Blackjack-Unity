@@ -12,11 +12,22 @@ public class AccountManager : MonoBehaviour
     [SerializeField] private TMP_InputField username;
     [SerializeField] private TMP_InputField password;
     [SerializeField] private TextMeshProUGUI erro;
+    public ScreenOrientation targetOrientation = ScreenOrientation.LandscapeLeft;
 
 
     private void Start()
     {
         erro.enabled = false;
+        SetOrientation();
+    }
+
+    void SetOrientation()
+    {
+        // Verifique se estamos em um dispositivo móvel (pode ser ajustado conforme necessário)
+        if (Application.isMobilePlatform)
+        {
+            Screen.orientation = targetOrientation;
+        }
     }
 
     public void ConnectAccount()
@@ -47,6 +58,8 @@ public class AccountManager : MonoBehaviour
     {
         CreateAccountPanel.SetActive(true);
         erro.enabled = false;
+        username.text = "";
+        password.text = "";
     }
 
     public void CloseCreateAccount()

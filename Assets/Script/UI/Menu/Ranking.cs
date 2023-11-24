@@ -9,14 +9,16 @@ public class Ranking : MonoBehaviour
     public GameObject Content;
     public GameObject prefab;
     public List<Row> data;
+    public List<Row> ranking;
     private void Start()
     {
         data = APIConnections.instance.data;
+        ranking = data;
     }
 
     public void ChangeRanking()
     {
-        data.Sort();
+        ranking.Sort();
         foreach (Row r in data)
         {
             Content.SetActive(true);

@@ -9,6 +9,7 @@ public class CreateAccount : MonoBehaviour
     [SerializeField] private TMP_InputField password;
     [SerializeField] private TextMeshProUGUI erro;
     [SerializeField] private GameObject succesPanel;
+    [SerializeField] private GameObject CreateAccountPanel;
 
     private void Start()
     {
@@ -39,5 +40,11 @@ public class CreateAccount : MonoBehaviour
         if (password.text.Contains(" ")) throw new AccountException("a senha não pode conter espaços!");
         if (username.text.Length < 6) throw new AccountException("o usuário deve conter pelo menos 6 digitos!");
         if (password.text.Length < 6) throw new AccountException("a senha deve conter pelo menos 6 digitos!");
+    }
+    public void CloseCreateAccount()
+    {
+        username.text = "";
+        password.text = "";
+        gameObject.SetActive(false);
     }
 }
